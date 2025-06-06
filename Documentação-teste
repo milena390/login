@@ -1,0 +1,172 @@
+Modelo de Documento de Registro de Teste (Baseado no CMMI)
+Informações Gerais
+Nome do Projeto: Formulário pesquisa de palavras.
+Nome do Desenvolvedor/Aluno: Milena Silva e Melissa Martins.
+Data do Registro: 03/06/2025
+Versão do Software: v1.0
+Versão da Documentação: 2
+Responsável por revisão: Pedro Costa.
+ 
+Objetivo do Teste
+O objetivo deste teste é validar os campos  email e senha.
+ 
+Escopo do Teste
+Inclui: Validar os campos email e senha.
+Não Inclui: Salvar senha ou email no banco de dados.
+
+ 
+Ambiente de Teste
+
+Sistema Operacional: Windows 11
+Versão do PHP: 8.2.0  
+Ferramentas Utilizadas: Editor de texto (VS Code), terminal para execução(xampp).
+
+ 
+
+ 
+
+ 
+ 
+Casos de Teste
+
+
+
+ID do Caso de Teste
+TC01
+
+Descrição
+Colocamos o email e senha corretos(os que estavam salvos no banco de dados).
+
+Entrada
+Email= usuario@exemplo.com
+Senha= senha123
+
+Resultado Esperado
+Email  ou Senha  corretos.
+
+Resultado Obtido
+Email  ou Senha incorretos
+
+Status (Passou/Falhou)
+Falhou
+
+
+ID do Caso de Teste
+TC02
+
+Descrição
+Colocamos o email e senha Incorretos(os que não estavam salvos no banco de dados).
+
+Entrada
+Email= lolo@gmail.com
+Senha= senha12e
+
+Resultado Esperado
+Email  ou Senha incorretos
+
+Resultado Obtido
+Email  ou Senha incorretos
+
+Status (Passou/Falhou)
+Passou
+
+
+ID do Caso de Teste
+TC03
+
+Descrição
+Colocamos apenas o campo email Incorreto (o que não estava salvo no banco de dados).
+
+Entrada
+Email= lolo@gmail.com
+Senha= senha123
+
+Resultado Esperado
+Email  ou Senha incorretos
+
+Resultado Obtido
+Email  ou Senha incorretos
+
+Status (Passou/Falhou)
+Passou
+
+
+ID do Caso de Teste
+TC04
+
+Descrição
+Colocamos apenas o campo senha Incorreto (o que não estava salvo no banco de dados).
+
+Entrada
+Email= usuario@exemplo.com
+Senha= senha12e
+
+Resultado Esperado
+Email  ou Senha incorretos
+
+Resultado Obtido
+Email  ou Senha incorretos
+
+Status (Passou/Falhou)
+Passou
+
+
+
+ 
+Análise de Resultados
+
+
+-Foram feitos 4 testes
+
+-Somente 3 testes foram concluídos com sucesso TC02, TC03 e o TC04(mas por conta que o código ainda estar falho)
+
+-O código continua falho por conta da função do HASH que ele está validando qualquer senha, ou seja, nenhuma senha está sendo aceita.
+ 
+Conclusão
+-Os testes manuais ajudaram a identificar um problema com valores de entrada.  Após corrigir o código, será necessário reexecutar os testes para garantir que todas as funcionalidades estejam funcionando conforme o esperado.
+
+ 
+Anexos
+
+
+<?php
+// Função para validar o login
+function validarLogin($email, $senha) {
+    // Simula um banco de dados de usuários
+    $usuarios = [
+        [
+            'email' => 'usuario@exemplo.com',
+            'senha_hash' => password_hash('senha123', PASSWORD_DEFAULT)
+        ]
+    ];
+
+
+    foreach ($usuarios as $usuario) {
+        if ($usuario['email'] === $email && password_verify($senha, $usuario['senha_hash'])) {
+            return true; // Login válido
+        }
+    }
+    return false; // Login inválido
+}
+
+
+// Função para sanitizar entradas (evitar SQL Injection)
+function sanitizarEntrada($dado) {
+    return htmlspecialchars(strip_tags(trim($dado)));
+}
+
+
+// Exemplo de uso
+$email = sanitizarEntrada($_POST['email'] ?? '');
+$senha = sanitizarEntrada($_POST['senha'] ?? '');
+
+
+if (validarLogin($email, $senha)) {
+    session_start();
+    $_SESSION['logado'] = true;
+    echo "Login bem-sucedido!";
+} else {
+    echo "Email ou senha incorretos.";
+}
+?>
+
